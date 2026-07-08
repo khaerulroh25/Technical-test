@@ -62,7 +62,7 @@ function ChatWindow({ onClose }: ChatWindowProps) {
 
     sm:inset-x-auto
     sm:bottom-24 sm:right-6
-    sm:h-130 sm:w-95
+    sm:h-120 sm:w-95
   "
     >
       {/* Header */}
