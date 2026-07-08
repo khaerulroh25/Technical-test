@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Dataset;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Http\Requests\DashboardFilterRequest;
 
 class DashboardController extends Controller
 {
-    public function overview(Request $request, Dataset $dataset): JsonResponse
+    public function overview(DashboardFilterRequest $request, Dataset $dataset): JsonResponse
     {
         if ($dataset->status !== 'completed') {
             return response()->json([
@@ -18,26 +18,11 @@ class DashboardController extends Controller
             ], 409);
         }
 
-        $validated = $request->validate([
-            'date_from' => [
-                'nullable',
-                'date',
-            ],
-            'date_to' => [
-                'nullable',
-                'date',
-                'after_or_equal:date_from',
-            ],
-            'country' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-        ]);
+        $filters = $request->validated();
 
         $query = $this->applyFilters(
             $dataset->transactions(),
-            $validated
+            $filters
         );
 
         $overview = $query
@@ -52,9 +37,9 @@ class DashboardController extends Controller
         return response()->json([
             'message' => 'Dashboard overview berhasil diambil.',
             'filters' => [
-                'date_from' => $validated['date_from'] ?? null,
-                'date_to' => $validated['date_to'] ?? null,
-                'country' => $validated['country'] ?? null,
+                'date_from' => $filters['date_from'] ?? null,
+                'date_to' => $filters['date_to'] ?? null,
+                'country' => $filters['country'] ?? null,
             ],
             'data' => [
                 'total_revenue' => (float) $overview->total_revenue,
@@ -62,6 +47,49 @@ class DashboardController extends Controller
                 'products_sold' => (int) $overview->products_sold,
                 'total_customers' => (int) $overview->total_customers,
             ],
+        ]);
+    }
+
+    public function salesTrend(
+        DashboardFilterRequest $request,
+        Dataset $dataset
+    ): JsonResponse {
+        if ($dataset->status !== 'completed') {
+            return response()->json([
+                'message' => 'Dataset belum selesai diproses.',
+            ], 409);
+        }
+
+        $filters = $request->validated();
+
+        $query = $this->applyFilters(
+            $dataset->transactions(),
+            $filters
+        );
+
+        $salesTrend = $query
+            ->selectRaw('
+            DATE_FORMAT(invoice_date, "%Y-%m") as period,
+            COALESCE(SUM(total_sales), 0) as revenue
+        ')
+            ->groupBy('period')
+            ->orderBy('period')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'period' => $item->period,
+                    'revenue' => (float) $item->revenue,
+                ];
+            });
+
+        return response()->json([
+            'message' => 'Sales trend berhasil diambil.',
+            'filters' => [
+                'date_from' => $filters['date_from'] ?? null,
+                'date_to' => $filters['date_to'] ?? null,
+                'country' => $filters['country'] ?? null,
+            ],
+            'data' => $salesTrend,
         ]);
     }
 
