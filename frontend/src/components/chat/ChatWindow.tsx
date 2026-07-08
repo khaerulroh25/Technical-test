@@ -51,7 +51,20 @@ function ChatWindow({ onClose }: ChatWindowProps) {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 flex h-130 w-95 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+    <div
+      className="
+    fixed
+    inset-x-4 bottom-20
+    z-50
+    flex h-[70vh] flex-col
+    overflow-hidden rounded-2xl
+    border border-gray-200 bg-white shadow-2xl
+
+    sm:inset-x-auto
+    sm:bottom-24 sm:right-6
+    sm:h-130 sm:w-95
+  "
+    >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
         <div className="flex items-center gap-3">
