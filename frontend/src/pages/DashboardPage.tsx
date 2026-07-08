@@ -1,7 +1,7 @@
 import UploadDataset from "../components/dashboard/UploadDataset";
 import DashboardOverview from "../components/dashboard/DashboardOverview";
 import DashboardFilter from "../components/dashboard/DashboardFilter";
-// import SalesTrendChart from "../components/charts/SalesTrendChart";
+import SalesTrendChart from "../components/charts/SalesTrendChart";
 import SalesByCountryChart from "../components/charts/SalesByCountryChart";
 // import TopProductsChart from "../components/charts/TopProductsChart";
 
@@ -22,7 +22,7 @@ function DashboardPage() {
       <DashboardFilter />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        {/* <SalesTrendChart /> */}
+        <SalesTrendChart />
         <SalesByCountryChart />
       </div>
 
