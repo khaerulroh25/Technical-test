@@ -1,12 +1,12 @@
 import { CalendarDays, ChevronDown } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 
 function DashboardFilter() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [country, setCountry] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const filters = {
