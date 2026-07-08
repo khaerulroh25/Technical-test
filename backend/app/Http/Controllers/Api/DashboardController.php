@@ -137,6 +137,53 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function topProducts(
+        DashboardFilterRequest $request,
+        Dataset $dataset
+    ): JsonResponse {
+        if ($dataset->status !== 'completed') {
+            return response()->json([
+                'message' => 'Dataset belum selesai diproses.',
+            ], 409);
+        }
+
+        $filters = $request->validated();
+
+        $query = $this->applyFilters(
+            $dataset->transactions(),
+            $filters
+        );
+
+        $topProducts = $query
+            ->selectRaw('
+            stock_code,
+            description,
+            COALESCE(SUM(quantity), 0) as quantity
+        ')
+            ->groupBy('stock_code', 'description')
+            ->orderByDesc('quantity')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'stock_code' => $item->stock_code,
+                    'product' => $item->description
+                        ?? $item->stock_code,
+                    'quantity' => (int) $item->quantity,
+                ];
+            });
+
+        return response()->json([
+            'message' => 'Top products berhasil diambil.',
+            'filters' => [
+                'date_from' => $filters['date_from'] ?? null,
+                'date_to' => $filters['date_to'] ?? null,
+                'country' => $filters['country'] ?? null,
+            ],
+            'data' => $topProducts,
+        ]);
+    }
+
     private function applyFilters(HasMany $query, array $filters): HasMany
     {
         if (!empty($filters['date_from'])) {
