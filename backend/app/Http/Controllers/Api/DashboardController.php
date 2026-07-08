@@ -177,14 +177,6 @@ class DashboardController extends Controller
             ], 409);
         }
 
-        $dateRange = $dataset
-            ->transactions()
-            ->selectRaw('
-            MIN(DATE(invoice_date)) as min_date,
-            MAX(DATE(invoice_date)) as max_date
-        ')
-            ->first();
-
         $countries = $dataset
             ->transactions()
             ->whereNotNull('country')
@@ -196,10 +188,6 @@ class DashboardController extends Controller
         return response()->json([
             'message' => 'Filter options berhasil diambil.',
             'data' => [
-                'date_range' => [
-                    'min' => $dateRange->min_date,
-                    'max' => $dateRange->max_date,
-                ],
                 'countries' => $countries,
             ],
         ]);
