@@ -12,3 +12,5 @@ Route::get('/user', function (Request $request) {
 Route::post('/datasets/upload', [DatasetController::class, 'store']);
 Route::get('/datasets/{dataset}/status', [DatasetController::class, 'status']);
 Route::get('/datasets/{dataset}/dashboard/overview', [DashboardController::class, 'overview']);
+Route::get('/datasets/{dataset}/dashboard/sales-trend', [DashboardController::class, 'salesTrend']);
+Route::get('/datasets/{dataset}/dashboard/sales-by-country', [DashboardController::class, 'salesByCountry']);

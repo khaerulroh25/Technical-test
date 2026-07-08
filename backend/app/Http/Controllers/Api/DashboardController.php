@@ -93,6 +93,50 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function salesByCountry(
+        DashboardFilterRequest $request,
+        Dataset $dataset
+    ): JsonResponse {
+        if ($dataset->status !== 'completed') {
+            return response()->json([
+                'message' => 'Dataset belum selesai diproses.',
+            ], 409);
+        }
+
+        $filters = $request->validated();
+
+        $query = $this->applyFilters(
+            $dataset->transactions(),
+            $filters
+        );
+
+        $salesByCountry = $query
+            ->selectRaw('
+            country,
+            COALESCE(SUM(total_sales), 0) as revenue
+        ')
+            ->groupBy('country')
+            ->orderByDesc('revenue')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'country' => $item->country,
+                    'revenue' => (float) $item->revenue,
+                ];
+            });
+
+        return response()->json([
+            'message' => 'Sales by country berhasil diambil.',
+            'filters' => [
+                'date_from' => $filters['date_from'] ?? null,
+                'date_to' => $filters['date_to'] ?? null,
+                'country' => $filters['country'] ?? null,
+            ],
+            'data' => $salesByCountry,
+        ]);
+    }
+
     private function applyFilters(HasMany $query, array $filters): HasMany
     {
         if (!empty($filters['date_from'])) {
