@@ -3,7 +3,7 @@ import DashboardOverview from "../components/dashboard/DashboardOverview";
 import DashboardFilter from "../components/dashboard/DashboardFilter";
 import SalesTrendChart from "../components/charts/SalesTrendChart";
 import SalesByCountryChart from "../components/charts/SalesByCountryChart";
-// import TopProductsChart from "../components/charts/TopProductsChart";
+import TopProductsChart from "../components/charts/TopProductsChart";
 
 function DashboardPage() {
   return (
@@ -26,7 +26,7 @@ function DashboardPage() {
         <SalesByCountryChart />
       </div>
 
-      {/* <TopProductsChart /> */}
+      <TopProductsChart />
     </div>
   );
 }
