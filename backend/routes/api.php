@@ -15,3 +15,4 @@ Route::get('/datasets/{dataset}/dashboard/overview', [DashboardController::class
 Route::get('/datasets/{dataset}/dashboard/sales-trend', [DashboardController::class, 'salesTrend']);
 Route::get('/datasets/{dataset}/dashboard/sales-by-country', [DashboardController::class, 'salesByCountry']);
 Route::get('/datasets/{dataset}/dashboard/top-products', [DashboardController::class, 'topProducts']);
+Route::get('/datasets/{dataset}/dashboard/filter-options', [DashboardController::class, 'filterOptions']);

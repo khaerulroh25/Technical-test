@@ -36,11 +36,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'message' => 'Dashboard overview berhasil diambil.',
-            'filters' => [
-                'date_from' => $filters['date_from'] ?? null,
-                'date_to' => $filters['date_to'] ?? null,
-                'country' => $filters['country'] ?? null,
-            ],
+            'filters' => $this->formatFilters($filters),
             'data' => [
                 'total_revenue' => (float) $overview->total_revenue,
                 'total_orders' => (int) $overview->total_orders,
@@ -84,11 +80,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'message' => 'Sales trend berhasil diambil.',
-            'filters' => [
-                'date_from' => $filters['date_from'] ?? null,
-                'date_to' => $filters['date_to'] ?? null,
-                'country' => $filters['country'] ?? null,
-            ],
+            'filters' => $this->formatFilters($filters),
             'data' => $salesTrend,
         ]);
     }
@@ -128,11 +120,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'message' => 'Sales by country berhasil diambil.',
-            'filters' => [
-                'date_from' => $filters['date_from'] ?? null,
-                'date_to' => $filters['date_to'] ?? null,
-                'country' => $filters['country'] ?? null,
-            ],
+            'filters' => $this->formatFilters($filters),
             'data' => $salesByCountry,
         ]);
     }
@@ -175,12 +163,45 @@ class DashboardController extends Controller
 
         return response()->json([
             'message' => 'Top products berhasil diambil.',
-            'filters' => [
-                'date_from' => $filters['date_from'] ?? null,
-                'date_to' => $filters['date_to'] ?? null,
-                'country' => $filters['country'] ?? null,
-            ],
+            'filters' => $this->formatFilters($filters),
             'data' => $topProducts,
+        ]);
+    }
+
+    public function filterOptions(
+        Dataset $dataset
+    ): JsonResponse {
+        if ($dataset->status !== 'completed') {
+            return response()->json([
+                'message' => 'Dataset belum selesai diproses.',
+            ], 409);
+        }
+
+        $dateRange = $dataset
+            ->transactions()
+            ->selectRaw('
+            MIN(DATE(invoice_date)) as min_date,
+            MAX(DATE(invoice_date)) as max_date
+        ')
+            ->first();
+
+        $countries = $dataset
+            ->transactions()
+            ->whereNotNull('country')
+            ->where('country', '!=', '')
+            ->distinct()
+            ->orderBy('country')
+            ->pluck('country');
+
+        return response()->json([
+            'message' => 'Filter options berhasil diambil.',
+            'data' => [
+                'date_range' => [
+                    'min' => $dateRange->min_date,
+                    'max' => $dateRange->max_date,
+                ],
+                'countries' => $countries,
+            ],
         ]);
     }
 
@@ -210,5 +231,14 @@ class DashboardController extends Controller
         }
 
         return $query;
+    }
+
+    private function formatFilters(array $filters): array
+    {
+        return [
+            'date_from' => $filters['date_from'] ?? null,
+            'date_to' => $filters['date_to'] ?? null,
+            'country' => $filters['country'] ?? null,
+        ];
     }
 }
