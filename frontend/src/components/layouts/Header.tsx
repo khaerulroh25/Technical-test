@@ -1,14 +1,27 @@
-import { Moon } from "lucide-react";
+import { Moon, Menu } from "lucide-react";
 
-function Header() {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+function Header({ onMenuClick }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-end border-b border-gray-200 bg-white px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6 lg:h-20 lg:px-8">
       <button
         type="button"
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+        onClick={onMenuClick}
+        className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:hidden"
+      >
+        <Menu size={24} />
+      </button>
+
+      <button
+        type="button"
+        className="ml-auto flex items-center gap-2 rounded-lg px-3 py-2"
       >
         <Moon size={20} />
-        <span>Dark Mode</span>
+
+        <span className="hidden sm:inline">Dark Mode</span>
       </button>
     </header>
   );
