@@ -9,3 +9,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/datasets/upload', [DatasetController::class, 'store']);
+Route::get('/datasets/{dataset}/status', [DatasetController::class, 'status']);

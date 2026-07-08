@@ -44,4 +44,18 @@ class DatasetController extends Controller
             ], 500);
         }
     }
+
+    public function status(Dataset $dataset): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Status dataset berhasil diambil.',
+            'data' => [
+                'id' => $dataset->id,
+                'name' => $dataset->name,
+                'status' => $dataset->status,
+                'total_rows' => $dataset->total_rows,
+                'error_message' => $dataset->error_message,
+            ],
+        ]);
+    }
 }
