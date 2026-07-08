@@ -1,12 +1,21 @@
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, LoaderCircle, CheckCircle2 } from "lucide-react";
 import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import {
+  getDatasetStatus,
+  uploadDataset,
+  type DatasetStatus,
+} from "../../services/datasetService";
 
 function UploadDataset() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [status, setStatus] = useState<DatasetStatus | null>(null);
+  const [totalRows, setTotalRows] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const isProcessing = status === "pending" || status === "processing";
   const handleFile = (file: File) => {
     const allowedExtensions = ["csv", "xlsx", "xls"];
     const extension = file.name.split(".").pop()?.toLowerCase();
@@ -17,6 +26,9 @@ function UploadDataset() {
     }
 
     setSelectedFile(file);
+    setStatus(null);
+    setTotalRows(0);
+    setError(null);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +41,9 @@ function UploadDataset() {
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    setIsDragging(true);
+    if (!isProcessing) {
+      setIsDragging(true);
+    }
   };
 
   const handleDragLeave = () => {
@@ -40,6 +54,10 @@ function UploadDataset() {
     event.preventDefault();
     setIsDragging(false);
 
+    if (isProcessing) {
+      return;
+    }
+
     const file = event.dataTransfer.files?.[0];
 
     if (file) {
@@ -48,6 +66,78 @@ function UploadDataset() {
   };
 
   const handleBrowseFile = () => {
+    if (!isProcessing) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const pollDatasetStatus = (datasetId: number) => {
+    const intervalId = window.setInterval(async () => {
+      try {
+        const dataset = await getDatasetStatus(datasetId);
+
+        setStatus(dataset.status);
+        setTotalRows(dataset.total_rows);
+
+        if (dataset.status === "completed") {
+          window.clearInterval(intervalId);
+
+          localStorage.setItem("activeDatasetId", datasetId.toString());
+        }
+
+        if (dataset.status === "failed") {
+          window.clearInterval(intervalId);
+
+          setError(dataset.error_message ?? "Dataset gagal diproses.");
+        }
+      } catch (error) {
+        window.clearInterval(intervalId);
+
+        setStatus(null);
+
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Gagal mengecek status dataset.",
+        );
+      }
+    }, 2000);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      handleBrowseFile();
+      return;
+    }
+
+    try {
+      setError(null);
+      setStatus("pending");
+
+      const dataset = await uploadDataset(selectedFile);
+
+      setStatus(dataset.status);
+
+      pollDatasetStatus(dataset.id);
+    } catch (error) {
+      setStatus(null);
+
+      setError(
+        error instanceof Error ? error.message : "Dataset gagal diupload.",
+      );
+    }
+  };
+
+  const handleNewFile = () => {
+    setSelectedFile(null);
+    setStatus(null);
+    setTotalRows(0);
+    setError(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
     fileInputRef.current?.click();
   };
 
@@ -63,17 +153,33 @@ function UploadDataset() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={handleBrowseFile}
-          className={`flex min-h-40 flex-1 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
-            isDragging
-              ? "border-orange-500 bg-orange-50"
-              : "border-orange-200 hover:border-orange-400 hover:bg-orange-50/50"
+          className={`flex min-h-40 flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
+            isProcessing
+              ? "cursor-not-allowed border-gray-200 bg-gray-50"
+              : isDragging
+                ? "cursor-pointer border-orange-500 bg-orange-50"
+                : "cursor-pointer border-orange-200 hover:border-orange-400 hover:bg-orange-50/50"
           }`}
         >
-          <CloudUpload
-            size={48}
-            strokeWidth={1.7}
-            className="mb-3 text-orange-500"
-          />
+          {isProcessing ? (
+            <LoaderCircle
+              size={48}
+              strokeWidth={1.7}
+              className="mb-3 animate-spin text-orange-500"
+            />
+          ) : status === "completed" ? (
+            <CheckCircle2
+              size={48}
+              strokeWidth={1.7}
+              className="mb-3 text-green-500"
+            />
+          ) : (
+            <CloudUpload
+              size={48}
+              strokeWidth={1.7}
+              className="mb-3 text-orange-500"
+            />
+          )}
 
           {selectedFile ? (
             <>
@@ -82,6 +188,18 @@ function UploadDataset() {
               <p className="mt-1 text-sm text-gray-500">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
+
+              {isProcessing && (
+                <p className="mt-2 text-sm text-orange-600">
+                  Dataset sedang diproses...
+                </p>
+              )}
+
+              {status === "completed" && (
+                <p className="mt-2 text-sm text-green-600">
+                  {totalRows.toLocaleString()} rows berhasil diimport.
+                </p>
+              )}
             </>
           ) : (
             <>
@@ -90,7 +208,7 @@ function UploadDataset() {
               </p>
 
               <p className="mt-1 text-sm text-gray-500">
-                atau klik Upload untuk memilih file
+                atau klik untuk memilih file
               </p>
             </>
           )}
@@ -99,19 +217,29 @@ function UploadDataset() {
         <div className="flex items-center justify-center md:w-44">
           <button
             type="button"
-            onClick={handleBrowseFile}
-            className="w-full rounded-lg bg-orange-500 px-6 py-3 font-medium text-white transition-colors hover:bg-orange-600"
+            onClick={status === "completed" ? handleNewFile : handleUpload}
+            disabled={isProcessing}
+            className="w-full rounded-lg bg-orange-500 px-6 py-3 font-medium text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-orange-300"
           >
-            Upload
+            {isProcessing
+              ? "Processing..."
+              : status === "completed"
+                ? "Upload New File"
+                : selectedFile
+                  ? "Upload"
+                  : "Pilih File"}
           </button>
         </div>
       </div>
+
+      {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
 
       <input
         ref={fileInputRef}
         type="file"
         accept=".csv,.xlsx,.xls"
         onChange={handleFileChange}
+        disabled={isProcessing}
         className="hidden"
       />
     </section>
