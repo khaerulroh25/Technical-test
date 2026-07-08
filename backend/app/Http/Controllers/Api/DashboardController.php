@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dataset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DashboardController extends Controller
 {
@@ -34,30 +35,10 @@ class DashboardController extends Controller
             ],
         ]);
 
-        $query = $dataset->transactions();
-
-        if (!empty($validated['date_from'])) {
-            $query->whereDate(
-                'invoice_date',
-                '>=',
-                $validated['date_from']
-            );
-        }
-
-        if (!empty($validated['date_to'])) {
-            $query->whereDate(
-                'invoice_date',
-                '<=',
-                $validated['date_to']
-            );
-        }
-
-        if (!empty($validated['country'])) {
-            $query->where(
-                'country',
-                $validated['country']
-            );
-        }
+        $query = $this->applyFilters(
+            $dataset->transactions(),
+            $validated
+        );
 
         $overview = $query
             ->selectRaw('
@@ -82,5 +63,33 @@ class DashboardController extends Controller
                 'total_customers' => (int) $overview->total_customers,
             ],
         ]);
+    }
+
+    private function applyFilters(HasMany $query, array $filters): HasMany
+    {
+        if (!empty($filters['date_from'])) {
+            $query->whereDate(
+                'invoice_date',
+                '>=',
+                $filters['date_from']
+            );
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate(
+                'invoice_date',
+                '<=',
+                $filters['date_to']
+            );
+        }
+
+        if (!empty($filters['country'])) {
+            $query->where(
+                'country',
+                $filters['country']
+            );
+        }
+
+        return $query;
     }
 }
