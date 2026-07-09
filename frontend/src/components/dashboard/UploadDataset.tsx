@@ -6,7 +6,10 @@ import {
   type DatasetStatus,
 } from "../../services/datasetService";
 
-function UploadDataset() {
+interface UploadDatasetProps {
+  onUploadCompleted: (datasetId: number) => void;
+}
+function UploadDataset({ onUploadCompleted }: UploadDatasetProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [status, setStatus] = useState<DatasetStatus | null>(null);
@@ -82,7 +85,7 @@ function UploadDataset() {
         if (dataset.status === "completed") {
           window.clearInterval(intervalId);
 
-          localStorage.setItem("activeDatasetId", datasetId.toString());
+          onUploadCompleted(datasetId);
         }
 
         if (dataset.status === "failed") {
