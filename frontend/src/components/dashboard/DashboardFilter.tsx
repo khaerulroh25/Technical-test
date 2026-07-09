@@ -1,21 +1,52 @@
 import { CalendarDays, ChevronDown } from "lucide-react";
-import { useState, type SubmitEvent } from "react";
+import { useState, useEffect, type SubmitEvent } from "react";
+import { type DashboardFilter as DashboardFilterType } from "../../types/dashboard";
+import { getFilterOptions } from "../../services/dashboardService";
 
-function DashboardFilter() {
+interface DashboardFilterProps {
+  datasetId: number | null;
+  onApply: (filters: DashboardFilterType) => void;
+}
+
+function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [country, setCountry] = useState("");
+  const [countries, setCountries] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("useEffect jalan");
+    if (!datasetId) {
+      setCountries([]);
+      return;
+    }
+
+    const fetchCountries = async () => {
+      try {
+        const data = await getFilterOptions(Number(datasetId));
+
+        setCountries(data.countries);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCountries();
+  }, [datasetId]);
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const filters = {
-      dateFrom,
-      dateTo,
-      country,
-    };
+    if (dateFrom && dateTo && dateFrom > dateTo) {
+      alert("Date From tidak boleh lebih besar dari Date To.");
+      return;
+    }
 
-    console.log("Applied filters:", filters);
+    onApply({
+      date_from: dateFrom,
+      date_to: dateTo,
+      country,
+    });
   };
 
   return (
@@ -64,11 +95,11 @@ function DashboardFilter() {
             className="h-12 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 pr-10 text-sm text-gray-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
           >
             <option value="">Semua Negara</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="France">France</option>
-            <option value="Germany">Germany</option>
-            <option value="Netherlands">Netherlands</option>
-            <option value="Spain">Spain</option>
+            {countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
           </select>
 
           <ChevronDown
