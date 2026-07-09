@@ -77,44 +77,53 @@ function SalesByCountryChart({ datasetId, filters }: SalesByCountryChartProps) {
         </p>
       </div>
 
-      {isLoading && (
+      {isLoading ? (
         <p className="mb-4 text-sm text-gray-500">
           Memuat penjualan berdasarkan negara...
         </p>
+      ) : salesByCountryData.length === 0 ? (
+        <div className="flex h-96 items-center justify-center">
+          <p className="text-sm text-gray-500">
+            Data tidak ditemukan untuk filter yang dipilih.
+          </p>
+        </div>
+      ) : (
+        <div className="h-80 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={salesByCountryData}
+                dataKey="revenue"
+                nameKey="country"
+                cx="50%"
+                cy="45%"
+                innerRadius={65}
+                outerRadius={100}
+                paddingAngle={3}
+              ></Pie>
+
+              <Tooltip
+                formatter={(value) => [
+                  formatNumber(Number(value)),
+                  "Pendapatan",
+                ]}
+                contentStyle={{
+                  borderRadius: "12px",
+                  border: "1px solid #e5e7eb",
+                }}
+              />
+
+              <Legend
+                verticalAlign="bottom"
+                iconType="circle"
+                formatter={(value) => (
+                  <span className="text-sm text-gray-600">{value}</span>
+                )}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       )}
-
-      <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={salesByCountryData}
-              dataKey="revenue"
-              nameKey="country"
-              cx="50%"
-              cy="45%"
-              innerRadius={65}
-              outerRadius={100}
-              paddingAngle={3}
-            ></Pie>
-
-            <Tooltip
-              formatter={(value) => [formatNumber(Number(value)), "Pendapatan"]}
-              contentStyle={{
-                borderRadius: "12px",
-                border: "1px solid #e5e7eb",
-              }}
-            />
-
-            <Legend
-              verticalAlign="bottom"
-              iconType="circle"
-              formatter={(value) => (
-                <span className="text-sm text-gray-600">{value}</span>
-              )}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
     </section>
   );
 }

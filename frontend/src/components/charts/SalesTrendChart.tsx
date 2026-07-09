@@ -68,78 +68,87 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
         <p className="mt-1 text-sm text-gray-500">Kinerja pendapatan bulanan</p>
       </div>
 
-      {isLoading && (
+      {isLoading ? (
         <p className="mb-4 text-sm text-gray-500">Memuat tren penjualan...</p>
+      ) : salesTrendData.length === 0 ? (
+        <div className="flex h-96 items-center justify-center">
+          <p className="text-sm text-gray-500">
+            Data tidak ditemukan untuk filter yang dipilih.
+          </p>
+        </div>
+      ) : (
+        <div className="h-80 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={salesTrendData}
+              margin={{
+                top: 10,
+                right: 10,
+                left: 0,
+                bottom: 0,
+              }}
+            >
+              <CartesianGrid
+                strokeDasharray="4 4"
+                vertical={false}
+                stroke="#e5e7eb"
+              />
+
+              <XAxis
+                dataKey="period"
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "#6b7280",
+                  fontSize: 12,
+                }}
+                dy={10}
+              />
+
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "#6b7280",
+                  fontSize: 12,
+                }}
+                tickFormatter={(value) => formatNumber(Number(value))}
+                width={65}
+              />
+
+              <Tooltip
+                formatter={(value) => [
+                  formatNumber(Number(value)),
+                  "Pendapatan",
+                ]}
+                labelFormatter={(label) => `Periode: ${label}`}
+                contentStyle={{
+                  borderRadius: "12px",
+                  border: "1px solid #e5e7eb",
+                }}
+              />
+
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="#f97316"
+                strokeWidth={3}
+                dot={{
+                  r: 4,
+                  fill: "#f97316",
+                  strokeWidth: 0,
+                }}
+                activeDot={{
+                  r: 6,
+                  fill: "#f97316",
+                  stroke: "#ffffff",
+                  strokeWidth: 3,
+                }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       )}
-
-      <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={salesTrendData}
-            margin={{
-              top: 10,
-              right: 10,
-              left: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid
-              strokeDasharray="4 4"
-              vertical={false}
-              stroke="#e5e7eb"
-            />
-
-            <XAxis
-              dataKey="period"
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: "#6b7280",
-                fontSize: 12,
-              }}
-              dy={10}
-            />
-
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: "#6b7280",
-                fontSize: 12,
-              }}
-              tickFormatter={(value) => formatNumber(Number(value))}
-              width={65}
-            />
-
-            <Tooltip
-              formatter={(value) => [formatNumber(Number(value)), "Pendapatan"]}
-              labelFormatter={(label) => `Periode: ${label}`}
-              contentStyle={{
-                borderRadius: "12px",
-                border: "1px solid #e5e7eb",
-              }}
-            />
-
-            <Line
-              type="monotone"
-              dataKey="revenue"
-              stroke="#f97316"
-              strokeWidth={3}
-              dot={{
-                r: 4,
-                fill: "#f97316",
-                strokeWidth: 0,
-              }}
-              activeDot={{
-                r: 6,
-                fill: "#f97316",
-                stroke: "#ffffff",
-                strokeWidth: 3,
-              }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
     </section>
   );
 }
