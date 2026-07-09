@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, type LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 
 interface SummaryCardProps {
   title: string;
@@ -7,9 +7,7 @@ interface SummaryCardProps {
   icon: LucideIcon;
 }
 
-function SummaryCard({ title, value, change, icon: Icon }: SummaryCardProps) {
-  const isPositive = change >= 0;
-
+function SummaryCard({ title, value, icon: Icon }: SummaryCardProps) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="flex items-start gap-4">
