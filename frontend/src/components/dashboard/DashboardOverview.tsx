@@ -6,16 +6,16 @@ import {
   getDashboardOverview,
   type DashboardOverviewData,
 } from "../../services/dashboardService";
+import { type DashboardFilter } from "../../types/dashboard";
 
 interface DashboardOverviewProps {
   datasetId: number | null;
+  filters: DashboardFilter;
 }
-function DashboardOverview({ datasetId }: DashboardOverviewProps) {
+function DashboardOverview({ datasetId, filters }: DashboardOverviewProps) {
   const [overview, setOverview] = useState<DashboardOverviewData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    const datasetId = localStorage.getItem("activeDatasetId");
-
     if (!datasetId) {
       setOverview(null);
       return;
@@ -25,7 +25,7 @@ function DashboardOverview({ datasetId }: DashboardOverviewProps) {
       try {
         setIsLoading(true);
 
-        const data = await getDashboardOverview(Number(datasetId));
+        const data = await getDashboardOverview(datasetId, filters);
 
         setOverview(data);
       } catch (error) {
@@ -39,7 +39,7 @@ function DashboardOverview({ datasetId }: DashboardOverviewProps) {
     };
 
     fetchOverview();
-  }, [datasetId]);
+  }, [datasetId, filters]);
 
   const overviewData = [
     {
