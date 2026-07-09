@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DatasetController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ChatController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -16,3 +17,4 @@ Route::get('/datasets/{dataset}/dashboard/sales-trend', [DashboardController::cl
 Route::get('/datasets/{dataset}/dashboard/sales-by-country', [DashboardController::class, 'salesByCountry']);
 Route::get('/datasets/{dataset}/dashboard/top-products', [DashboardController::class, 'topProducts']);
 Route::get('/datasets/{dataset}/dashboard/filter-options', [DashboardController::class, 'filterOptions']);
+Route::post('/datasets/{dataset}/chat', [ChatController::class, 'chat']);
