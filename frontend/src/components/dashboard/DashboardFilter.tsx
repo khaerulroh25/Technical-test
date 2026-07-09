@@ -15,7 +15,6 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
   const [countries, setCountries] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("useEffect jalan");
     if (!datasetId) {
       setCountries([]);
       return;
