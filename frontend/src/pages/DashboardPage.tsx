@@ -4,6 +4,7 @@ import DashboardFilter from "../components/dashboard/DashboardFilter";
 import SalesTrendChart from "../components/charts/SalesTrendChart";
 import SalesByCountryChart from "../components/charts/SalesByCountryChart";
 import TopProductsChart from "../components/charts/TopProductsChart";
+import { type DashboardFilter as DashboardFilterType } from "../types/dashboard";
 import { useState } from "react";
 
 function DashboardPage() {
@@ -12,11 +13,16 @@ function DashboardPage() {
 
     return savedId ? Number(savedId) : null;
   });
+  const [filters, setFilters] = useState<DashboardFilterType>({});
 
   const handleDatasetCompleted = (datasetId: number) => {
     localStorage.setItem("activeDatasetId", datasetId.toString());
 
     setActiveDatasetId(datasetId);
+  };
+
+  const handleApplyFilter = (filter: DashboardFilterType) => {
+    setFilters(filter);
   };
   return (
     <div className="space-y-6">
@@ -29,9 +35,12 @@ function DashboardPage() {
 
       <UploadDataset onUploadCompleted={handleDatasetCompleted} />
 
-      <DashboardOverview datasetId={activeDatasetId} />
+      <DashboardOverview datasetId={activeDatasetId} filters={filters} />
 
-      <DashboardFilter />
+      <DashboardFilter
+        datasetId={activeDatasetId}
+        onApply={handleApplyFilter}
+      />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <SalesTrendChart />
