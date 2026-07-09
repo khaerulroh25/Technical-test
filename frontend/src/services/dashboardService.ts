@@ -6,6 +6,15 @@ export interface DashboardOverviewData {
   total_customers: number;
 }
 
+export interface FilterOptionsResponse {
+  countries: string[];
+}
+
+export interface SalesTrendData {
+  period: string;
+  revenue: number;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getDashboardOverview(
@@ -43,10 +52,6 @@ export async function getDashboardOverview(
   return result.data;
 }
 
-export interface FilterOptionsResponse {
-  countries: string[];
-}
-
 export async function getFilterOptions(
   datasetId: number,
 ): Promise<FilterOptionsResponse> {
@@ -58,6 +63,40 @@ export async function getFilterOptions(
 
   if (!response.ok) {
     throw new Error(result.message);
+  }
+
+  return result.data;
+}
+
+export async function getSalesTrend(
+  datasetId: number,
+  filters: DashboardFilter,
+): Promise<SalesTrendData[]> {
+  const params = new URLSearchParams();
+
+  if (filters.date_from) {
+    params.append("date_from", filters.date_from);
+  }
+
+  if (filters.date_to) {
+    params.append("date_to", filters.date_to);
+  }
+
+  if (filters.country) {
+    params.append("country", filters.country);
+  }
+
+  const queryString = params.toString();
+
+  const url = queryString
+    ? `${API_URL}/datasets/${datasetId}/dashboard/sales-trend?${queryString}`
+    : `${API_URL}/datasets/${datasetId}/dashboard/sales-trend`;
+
+  const response = await fetch(url);
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message ?? "Gagal mengambil sales trend.");
   }
 
   return result.data;

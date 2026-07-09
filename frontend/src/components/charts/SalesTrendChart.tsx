@@ -7,57 +7,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useState, useEffect } from "react";
+import { type DashboardFilter } from "../../types/dashboard";
+import {
+  getSalesTrend,
+  type SalesTrendData,
+} from "../../services/dashboardService";
 
-const salesTrendData = [
-  {
-    month: "Jan",
-    revenue: 520000,
-  },
-  {
-    month: "Feb",
-    revenue: 610000,
-  },
-  {
-    month: "Mar",
-    revenue: 580000,
-  },
-  {
-    month: "Apr",
-    revenue: 720000,
-  },
-  {
-    month: "May",
-    revenue: 680000,
-  },
-  {
-    month: "Jun",
-    revenue: 850000,
-  },
-  {
-    month: "Jul",
-    revenue: 790000,
-  },
-  {
-    month: "Aug",
-    revenue: 920000,
-  },
-  {
-    month: "Sep",
-    revenue: 880000,
-  },
-  {
-    month: "Oct",
-    revenue: 1050000,
-  },
-  {
-    month: "Nov",
-    revenue: 1180000,
-  },
-  {
-    month: "Dec",
-    revenue: 1250000,
-  },
-];
+interface SalesTrendChartProps {
+  datasetId: number | null;
+  filters: DashboardFilter;
+}
 
 const formatNumber = (value: number) => {
   if (value >= 1_000_000) {
@@ -71,7 +31,35 @@ const formatNumber = (value: number) => {
   return value.toLocaleString("id-ID");
 };
 
-function SalesTrendChart() {
+function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
+  const [salesTrendData, setSalesTrendData] = useState<SalesTrendData[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!datasetId) {
+      setSalesTrendData([]);
+      return;
+    }
+
+    const fetchSalesTrend = async () => {
+      try {
+        setIsLoading(true);
+
+        const data = await getSalesTrend(datasetId, filters);
+
+        setSalesTrendData(data);
+      } catch (error) {
+        console.error(error);
+        setSalesTrendData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSalesTrend();
+  }, [datasetId, filters]);
+
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-6">
       <div className="mb-6">
@@ -79,6 +67,10 @@ function SalesTrendChart() {
 
         <p className="mt-1 text-sm text-gray-500">Kinerja pendapatan bulanan</p>
       </div>
+
+      {isLoading && (
+        <p className="mb-4 text-sm text-gray-500">Memuat tren penjualan...</p>
+      )}
 
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -98,7 +90,7 @@ function SalesTrendChart() {
             />
 
             <XAxis
-              dataKey="month"
+              dataKey="period"
               axisLine={false}
               tickLine={false}
               tick={{
@@ -121,7 +113,7 @@ function SalesTrendChart() {
 
             <Tooltip
               formatter={(value) => [formatNumber(Number(value)), "Pendapatan"]}
-              labelFormatter={(label) => `Bulan: ${label}`}
+              labelFormatter={(label) => `Periode: ${label}`}
               contentStyle={{
                 borderRadius: "12px",
                 border: "1px solid #e5e7eb",

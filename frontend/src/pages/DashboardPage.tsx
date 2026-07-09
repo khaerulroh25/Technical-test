@@ -43,7 +43,7 @@ function DashboardPage() {
       />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <SalesTrendChart />
+        <SalesTrendChart datasetId={activeDatasetId} filters={filters} />
         <SalesByCountryChart />
       </div>
 
