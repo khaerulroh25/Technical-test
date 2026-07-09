@@ -47,7 +47,7 @@ function DashboardPage() {
         <SalesByCountryChart datasetId={activeDatasetId} filters={filters} />
       </div>
 
-      <TopProductsChart />
+      <TopProductsChart datasetId={activeDatasetId} filters={filters} />
     </div>
   );
 }

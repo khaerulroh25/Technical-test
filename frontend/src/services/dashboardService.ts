@@ -20,6 +20,11 @@ export interface SalesByCountryData {
   revenue: number;
 }
 
+export interface TopProductData {
+  product: string;
+  quantity: number;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getDashboardOverview(
@@ -138,6 +143,40 @@ export async function getSalesByCountry(
     throw new Error(
       result.message ?? "Gagal mengambil penjualan berdasarkan negara.",
     );
+  }
+
+  return result.data;
+}
+
+export async function getTopProducts(
+  datasetId: number,
+  filters: DashboardFilter,
+): Promise<TopProductData[]> {
+  const params = new URLSearchParams();
+
+  if (filters.date_from) {
+    params.append("date_from", filters.date_from);
+  }
+
+  if (filters.date_to) {
+    params.append("date_to", filters.date_to);
+  }
+
+  if (filters.country) {
+    params.append("country", filters.country);
+  }
+
+  const queryString = params.toString();
+
+  const url = queryString
+    ? `${API_URL}/datasets/${datasetId}/dashboard/top-products?${queryString}`
+    : `${API_URL}/datasets/${datasetId}/dashboard/top-products`;
+
+  const response = await fetch(url);
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message ?? "Gagal mengambil top products.");
   }
 
   return result.data;
