@@ -1,42 +1,70 @@
 import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { useState, useEffect } from "react";
+import { type DashboardFilter } from "../../types/dashboard";
+import {
+  getSalesByCountry,
+  type SalesByCountryData,
+} from "../../services/dashboardService";
 
-const salesByCountryData = [
-  {
-    country: "United Kingdom",
-    revenue: 7200000,
-    fill: "#f97316",
-  },
-  {
-    country: "Netherlands",
-    revenue: 285000,
-    fill: "#fb923c",
-  },
-  {
-    country: "Ireland",
-    revenue: 265000,
-    fill: "#fdba74",
-  },
-  {
-    country: "Germany",
-    revenue: 220000,
-    fill: "#fed7aa",
-  },
-  {
-    country: "France",
-    revenue: 195000,
-    fill: "#ffedd5",
-  },
-];
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    notation: "compact",
-  }).format(value);
+interface SalesByCountryChartProps {
+  datasetId: number | null;
+  filters: DashboardFilter;
 }
 
-function SalesByCountryChart() {
+interface SalesByCountryChartData extends SalesByCountryData {
+  fill: string;
+}
+
+const CHART_COLORS = ["#f97316", "#fb923c", "#fdba74", "#fed7aa", "#ffedd5"];
+
+const formatNumber = (value: number) => {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toLocaleString("id-ID")} jt`;
+  }
+
+  if (value >= 1_000) {
+    return `${(value / 1_000).toLocaleString("id-ID")} rb`;
+  }
+
+  return value.toLocaleString("id-ID");
+};
+
+function SalesByCountryChart({ datasetId, filters }: SalesByCountryChartProps) {
+  const [salesByCountryData, setSalesByCountryData] = useState<
+    SalesByCountryChartData[]
+  >([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!datasetId) {
+      setSalesByCountryData([]);
+      return;
+    }
+
+    const fetchSalesByCountry = async () => {
+      try {
+        setIsLoading(true);
+
+        const data = await getSalesByCountry(datasetId, filters);
+
+        const dataWithColors = data.map((item, index) => ({
+          ...item,
+          fill: CHART_COLORS[index % CHART_COLORS.length],
+        }));
+
+        setSalesByCountryData(dataWithColors);
+      } catch (error) {
+        console.error(error);
+        setSalesByCountryData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSalesByCountry();
+  }, [datasetId, filters]);
+
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-6">
       <div className="mb-6">
@@ -48,6 +76,12 @@ function SalesByCountryChart() {
           Distribusi Pendapatan di Negara - negara teratas
         </p>
       </div>
+
+      {isLoading && (
+        <p className="mb-4 text-sm text-gray-500">
+          Memuat penjualan berdasarkan negara...
+        </p>
+      )}
 
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -64,7 +98,7 @@ function SalesByCountryChart() {
             ></Pie>
 
             <Tooltip
-              formatter={(value) => [formatCurrency(Number(value)), "Revenue"]}
+              formatter={(value) => [formatNumber(Number(value)), "Pendapatan"]}
               contentStyle={{
                 borderRadius: "12px",
                 border: "1px solid #e5e7eb",

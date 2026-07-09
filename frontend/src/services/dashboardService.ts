@@ -15,6 +15,11 @@ export interface SalesTrendData {
   revenue: number;
 }
 
+export interface SalesByCountryData {
+  country: string;
+  revenue: number;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getDashboardOverview(
@@ -97,6 +102,42 @@ export async function getSalesTrend(
 
   if (!response.ok) {
     throw new Error(result.message ?? "Gagal mengambil sales trend.");
+  }
+
+  return result.data;
+}
+
+export async function getSalesByCountry(
+  datasetId: number,
+  filters: DashboardFilter,
+): Promise<SalesByCountryData[]> {
+  const params = new URLSearchParams();
+
+  if (filters.date_from) {
+    params.append("date_from", filters.date_from);
+  }
+
+  if (filters.date_to) {
+    params.append("date_to", filters.date_to);
+  }
+
+  if (filters.country) {
+    params.append("country", filters.country);
+  }
+
+  const queryString = params.toString();
+
+  const url = queryString
+    ? `${API_URL}/datasets/${datasetId}/dashboard/sales-by-country?${queryString}`
+    : `${API_URL}/datasets/${datasetId}/dashboard/sales-by-country`;
+
+  const response = await fetch(url);
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message ?? "Gagal mengambil penjualan berdasarkan negara.",
+    );
   }
 
   return result.data;
