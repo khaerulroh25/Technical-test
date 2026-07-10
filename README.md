@@ -135,3 +135,12 @@ Terminal 3 — Frontend
 cd frontend
 npm run dev
 ```
+
+## Sample Dataset
+
+Dataset untuk pengujian tersedia di folder:
+
+```text
+sample-data/
+└── data-sales-sample.csv
+```
