@@ -1,3 +1,23 @@
+## Konsep UI/UX
+
+### Layout Dashboard
+
+Dashboard menggunakan sidebar sederhana yang terdiri dari menu Dashboard dan Dataset. Bagian utama menampilkan summary cards di bagian atas, kemudian visualisasi grafik untuk analisis lebih detail. Chatbot ditempatkan sebagai floating button agar mudah diakses tanpa mengganggu area dashboard.
+
+### Skema Warna
+
+Warna utama yang digunakan adalah orange sebagai warna aksen untuk memberikan tampilan modern dan menonjolkan elemen penting. Tampilan juga mendukung light mode dan dark mode.
+
+### Hierarchy of Information
+
+Informasi disusun dari yang paling penting:
+
+1. Summary cards untuk insight cepat
+2. Grafik untuk analisis lebih detail
+3. Chatbot untuk eksplorasi data melalui pertanyaan
+
+Dengan urutan tersebut, pengguna dapat memahami kondisi data secara umum sebelum melakukan analisis lebih lanjut.
+
 # Installation
 
 ## 1. Clone Repository
