@@ -56,21 +56,26 @@ function TopProductChart({ datasetId, filters }: TopProductChartProps) {
     fetchTopProducts();
   }, [datasetId, filters]);
 
+  const isDark = document.documentElement.classList.contains("dark");
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Produk Terlaris</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Produk Terlaris
+        </h2>
 
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Produk dengan penjualan tertinggi berdasarkan jumllah terjual
         </p>
       </div>
 
       {isLoading ? (
-        <p className="mb-4 text-sm text-gray-500">Memuat produk terlaris...</p>
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          Memuat produk terlaris...
+        </p>
       ) : topProductData.length === 0 ? (
         <div className="flex h-96 items-center justify-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Data tidak ditemukan untuk filter yang dipilih.
           </p>
         </div>
@@ -89,14 +94,14 @@ function TopProductChart({ datasetId, filters }: TopProductChartProps) {
               <CartesianGrid
                 strokeDasharray="4 4"
                 horizontal={false}
-                stroke="#e5e7eb"
+                stroke={isDark ? "#374151" : "#e5e7eb"}
               />
               <XAxis
                 dataKey="product"
                 axisLine={false}
                 tickLine={false}
                 tick={{
-                  fill: "#6b7280",
+                  fill: isDark ? "#9ca3af" : "#6b7280",
                   fontSize: 12,
                 }}
                 angle={-25}
@@ -108,7 +113,7 @@ function TopProductChart({ datasetId, filters }: TopProductChartProps) {
                 axisLine={false}
                 tickLine={false}
                 tick={{
-                  fill: "#6b7280",
+                  fill: isDark ? "#9ca3af" : "#6b7280",
                   fontSize: 12,
                 }}
                 tickFormatter={(value) => formatNumber(Number(value))}
@@ -120,7 +125,9 @@ function TopProductChart({ datasetId, filters }: TopProductChartProps) {
                 ]}
                 contentStyle={{
                   borderRadius: "12px",
-                  border: "1px solid #e5e7eb",
+                  border: isDark ? "1px solid #374151" : "1px solid #e5e7eb",
+                  backgroundColor: isDark ? "#111827" : "#ffffff",
+                  color: isDark ? "#f9fafb" : "#111827",
                 }}
               />
               <Bar

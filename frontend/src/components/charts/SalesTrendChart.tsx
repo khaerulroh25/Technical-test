@@ -60,19 +60,27 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
     fetchSalesTrend();
   }, [datasetId, filters]);
 
-  return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Tren Penjualan</h2>
+  const isDark = document.documentElement.classList.contains("dark");
 
-        <p className="mt-1 text-sm text-gray-500">Kinerja pendapatan bulanan</p>
+  return (
+    <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Tren Penjualan
+        </h2>
+
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Kinerja pendapatan bulanan
+        </p>
       </div>
 
       {isLoading ? (
-        <p className="mb-4 text-sm text-gray-500">Memuat tren penjualan...</p>
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          Memuat tren penjualan...
+        </p>
       ) : salesTrendData.length === 0 ? (
         <div className="flex h-96 items-center justify-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Data tidak ditemukan untuk filter yang dipilih.
           </p>
         </div>
@@ -91,7 +99,7 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
               <CartesianGrid
                 strokeDasharray="4 4"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke={isDark ? "#374151" : "#e5e7eb"}
               />
 
               <XAxis
@@ -99,7 +107,7 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
                 axisLine={false}
                 tickLine={false}
                 tick={{
-                  fill: "#6b7280",
+                  fill: isDark ? "#9ca3af" : "#6b7280",
                   fontSize: 12,
                 }}
                 dy={10}
@@ -109,7 +117,7 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
                 axisLine={false}
                 tickLine={false}
                 tick={{
-                  fill: "#6b7280",
+                  fill: isDark ? "#9ca3af" : "#6b7280",
                   fontSize: 12,
                 }}
                 tickFormatter={(value) => formatNumber(Number(value))}
@@ -124,7 +132,9 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
                 labelFormatter={(label) => `Periode: ${label}`}
                 contentStyle={{
                   borderRadius: "12px",
-                  border: "1px solid #e5e7eb",
+                  border: isDark ? "1px solid #374151" : "1px solid #e5e7eb",
+                  backgroundColor: isDark ? "#111827" : "#ffffff",
+                  color: isDark ? "#f9fafb" : "#111827",
                 }}
               />
 
@@ -141,7 +151,7 @@ function SalesTrendChart({ datasetId, filters }: SalesTrendChartProps) {
                 activeDot={{
                   r: 6,
                   fill: "#f97316",
-                  stroke: "#ffffff",
+                  stroke: isDark ? "#111827" : "#ffffff",
                   strokeWidth: 3,
                 }}
               />

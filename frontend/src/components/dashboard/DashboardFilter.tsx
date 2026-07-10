@@ -49,8 +49,10 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
   };
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6">
-      <h2 className="mb-5 text-lg font-semibold text-gray-900">Filter</h2>
+    <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
+        Filter
+      </h2>
 
       <form
         onSubmit={handleSubmit}
@@ -60,14 +62,14 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
         <div className="relative">
           <CalendarDays
             size={20}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white"
           />
 
           <input
             type="date"
             value={dateFrom}
             onChange={(event) => setDateFrom(event.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white pl-12 pr-4 text-sm text-gray-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 pl-12 pr-4 text-sm text-gray-700 dark:text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
           />
         </div>
 
@@ -75,14 +77,14 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
         <div className="relative">
           <CalendarDays
             size={20}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white"
           />
 
           <input
             type="date"
             value={dateTo}
             onChange={(event) => setDateTo(event.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white pl-12 pr-4 text-sm text-gray-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 pl-12 pr-4 text-sm text-gray-700 dark:text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
           />
         </div>
 
@@ -91,7 +93,7 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
           <select
             value={country}
             onChange={(event) => setCountry(event.target.value)}
-            className="h-12 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 pr-10 text-sm text-gray-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="h-12 w-full appearance-none rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 px-4 pr-10 text-sm text-gray-700 dark:text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
           >
             <option value="">Semua Negara</option>
             {countries.map((country) => (
@@ -103,7 +105,7 @@ function DashboardFilter({ datasetId, onApply }: DashboardFilterProps) {
 
           <ChevronDown
             size={18}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white"
           />
         </div>
 

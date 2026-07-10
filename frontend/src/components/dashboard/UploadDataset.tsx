@@ -145,8 +145,8 @@ function UploadDataset({ onUploadCompleted }: UploadDatasetProps) {
   };
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6">
-      <h2 className="mb-5 text-lg font-semibold text-gray-900">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
         Upload Dataset
       </h2>
 
@@ -158,10 +158,10 @@ function UploadDataset({ onUploadCompleted }: UploadDatasetProps) {
           onClick={handleBrowseFile}
           className={`flex min-h-40 flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
             isProcessing
-              ? "cursor-not-allowed border-gray-200 bg-gray-50"
+              ? "cursor-not-allowed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
               : isDragging
-                ? "cursor-pointer border-orange-500 bg-orange-50"
-                : "cursor-pointer border-orange-200 hover:border-orange-400 hover:bg-orange-50/50"
+                ? "cursor-pointer border-orange-500 bg-orange-50 dark:bg-orange-500/10"
+                : "cursor-pointer border-orange-200 hover:border-orange-400 hover:bg-orange-50/50 dark:border-orange-500/40 dark:hover:border-orange-500 dark:hover:bg-orange-500/10"
           }`}
         >
           {isProcessing ? (
@@ -186,31 +186,33 @@ function UploadDataset({ onUploadCompleted }: UploadDatasetProps) {
 
           {selectedFile ? (
             <>
-              <p className="font-medium text-gray-900">{selectedFile.name}</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                {selectedFile.name}
+              </p>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
 
               {isProcessing && (
-                <p className="mt-2 text-sm text-orange-600">
+                <p className="mt-2 text-sm text-orange-600 dark:text-orange-400">
                   Dataset sedang diproses...
                 </p>
               )}
 
               {status === "completed" && (
-                <p className="mt-2 text-sm text-green-600">
+                <p className="mt-2 text-sm text-green-600 dark:text-green-400">
                   {totalRows.toLocaleString()} rows berhasil diimport.
                 </p>
               )}
             </>
           ) : (
             <>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 Drag & Drop CSV / Excel
               </p>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 atau klik untuk memilih file
               </p>
             </>

@@ -9,7 +9,7 @@ interface SummaryCardProps {
 
 function SummaryCard({ title, value, icon: Icon }: SummaryCardProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
       <div className="flex items-start gap-4">
         {/* Icon */}
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
@@ -18,9 +18,13 @@ function SummaryCard({ title, value, icon: Icon }: SummaryCardProps) {
 
         {/* Content */}
         <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {title}
+          </p>
 
-          <h3 className="mt-1 text-2xl font-bold text-gray-900">{value}</h3>
+          <h3 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+            {value}
+          </h3>
         </div>
       </div>
     </div>

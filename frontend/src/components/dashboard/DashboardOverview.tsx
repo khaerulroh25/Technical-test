@@ -68,13 +68,15 @@ function DashboardOverview({ datasetId, filters }: DashboardOverviewProps) {
     },
   ];
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6">
-      <h2 className="mb-5 text-lg font-semibold text-gray-900">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
         Dashboard Overview
       </h2>
 
       {isLoading && (
-        <p className="mb-4 text-sm text-gray-500">Memuat overview...</p>
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          Memuat overview...
+        </p>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
